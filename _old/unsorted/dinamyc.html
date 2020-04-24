@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<script>
+	// Задача: кузнечик двигается от 1 до "n", только прямо и
+	// может прыгать на +1 или +2 цифры вперед. Сколько
+	// различных траекторий есть у кузнечика для 
+	// достижения цифры "n"
+	function traj_num(n) {
+		line = [0, 1];
+		for(var k=2; k<n+1; k++) {
+			line.push(line[k-1]+line[k-2]);
+		}
+		return line[n];
+	}
+	
+	// Задача: как и верхнняя, но добавляються условия:
+	// Кузнечик может прыгать на +1, +2, +3 клетки
+	// Так же передается массив с запрещенными для прыжка
+	// цифры
+	function traj_num_count(n, allowed) {
+		line = [0, 1, 1];
+		for(var k=3; k<n+1; k++) {
+			if(allowed[k]) {
+				line.push(line[k-1]+line[k-2])+line[k-3];
+			}
+			else {
+				line.push(0);
+			}
+		}
+		return line[n];
+	}
+	
+	// Задача: кузнечику все так, же надо добраться до некоторого
+	// числа. При этом посещение разных клеток имеет разную стоимость.
+	// Необходимо посчитать сколько будет стоить самый дешевый путь
+	// до цифры "n".
+	function min_cost_movement(n, price) {
+		var cost=[0, price[1], price[1] + price[2]];
+		for(var i=3; i<n+1; i++) {
+			cost.push(price[i]+Math.min(cost[i-1], cost[i-2]))
+		}
+		return cost[n];
+	}
+	
+	// Двумерное динамическое программирование
+	
+	// Функция, которая считает количество возможных траекторий
+	// для фигуры короля, до достижения клетки шахматной доски
+	// Поле 8х8 клеток (но программа может и больше)
+	function movement_king(y, x) {
+		var rows = [];
+		for(var i=0; i<y+1; i++) {
+			rows.push([]);
+			for(var j=0; j<x+1; j++) {
+				rows[i].push(0);
+			}
+		}
+		for(var i=1; i<y+1; i++) {
+			for(var j=1; j<x+1; j++) {
+				if(i==1 && j==1) {
+					rows[i][j]= 1;
+				}
+				else {
+					rows[i][j] = rows[i-1][j] + rows[i][j-1];
+				}
+			}
+		}
+		return rows[y][x];
+	}
+	
+	// Функция поиска Наибольшей Общей Подпоследовательности двух
+	// массивов разной длины.
+	function lcs(ar, br) {
+		var rows = [];
+		for(var i=0; i<ar.length+1; i++) {
+			rows.push([]);
+			for(var j=0; j<br.length+1; j++) {
+				if(i == 0 || j == 0) {
+					rows[i].push(0);
+				}
+				else if(ar[i-1] == br[j-1]) {
+					rows[i].push(1 + rows[i-1][j-1]);
+				}
+				else {
+					rows[i].push(Math.max(rows[i-1][j], rows[i][j-1]));
+				}
+			}
+		}
+		return rows[ar.length][br.length];
+	}
+	
+	// Функция поиска Наибольшей Возрастающей Последовательности
+	// одного массива
+	function gis(ar) {
+		var rows = [0];
+		var max = 0;
+		for(var i=1; i<ar.length+1; i++) {
+			var m=0;
+			for(var j=0; j<i; j++) {
+				if(ar[i]>ar[j] && rows[j]>m) {
+					m = rows[j];
+				}
+			}
+			rows.push(m+1);
+			if(rows[i-1]>max) {
+				max = rows[i-1];
+			}
+		}
+		return max;
+	}
+	
+	// Практика: динамическое программирование
+	
+	// Упражнение №1: Кузнечик умеет ходить на +1 +2 +3. Сколько
+	// способов достичь цифру "N"? Изначально кузнечик стоит на цифре 1.
+	function grasshopper_1(n) {
+		var line = [0, 1];
+		for(var i=1; i<n+1; i++) {
+			if(i>3) {
+				line.push(line[i-1] + line[i-2] + line[i-3]);
+			}
+			else if(i>2) {
+				line.push(line[i-1] + line[i-2]);
+			}
+			else if(i>1) {
+				line.push(line[i-1]);
+			}
+		}
+		return line[n];
+	}
+	
+	// Упражнение №2: Кузнечик умеет ходить на +1, +2, *3.
+	function grasshopper_2(n) {
+		var line = [0, 1];
+		for(var i=1; i<n+1; i++) {
+			if(i%3 == 0) {
+				line.push(line[i-1] + line[i-2] + line[i/3])
+			}
+			else if(i>2) {
+				line.push(line[i-1] + line[i-2]);
+			}
+			else if(i>1) {
+				line.push(line[i-1]);
+			}
+		}
+		return line[n];
+	}
+	
+	// Упражнение №3: Посещение цифры имеет "цену". Ходит на +1, +2.
+	// Найти минимальную стоимость маршрута.
+	function grasshopper_3(n, cost) {
+		var line = [0, 0];
+		for(var i=1; i<n+1; i++) {
+			if(i>2) {
+				line.push(cost[i] + Math.min(line[i-1], line[i-2]));
+			}
+			else if(i>1) {
+				line.push(cost[i] + line[i-1]);
+			}
+		}
+		return line[n];
+	}
+	
+	// Упражнение №4: Условия как и выше, только программа выводит
+	// самый дешевый путь и цену
+	function grasshopper_4() {
+		var cost = [0, 0, 2, 4, 1, 5, 3, 1, 2];
+		var n = 5;
+		var line = [0, 0];
+		for(var i=2; i<n+1; i++) {
+				line.push(cost[i] + Math.min(line[i-1], line[i-2]));
+		}
+		var way_back = [cost[n]];
+		var left = n;
+		while(left>1) {
+			if(cost[left-1] < cost[left-2]) {
+				way_back.push(cost[left-1]);
+				left--;
+			}
+			else {
+				way_back.push(cost[left-2]);
+				left-=2;
+			}
+		}
+		var way_forward = [];
+		for(var i=way_back.length; i>=0; i--) {
+			way_forward.push(way_back[i]);
+		}
+		console.log(line[n]);
+		console.log(way_forward);
+	}
+	
+	// Упражнение №5: Игра ферзь для двоих. Ферзь стартует в левом верхнем
+	// углу. Кто первым поставить ферзя в нижний правый угол - победил.
+	// Ферзб может хоть только на 1 клетку: вправо, вниз или вправо-вниз.
+	// Задача разметить поле и указать клетки, начиная ход в которых
+	// твоя стратегия проигрышная (пометить "-") и клетки в которых
+	// стратегия выйгрышна (пометить "+")
+	function game_queen (y, x) {
+		var field = [];
+		for(var i=0; i<y+2; i++) {
+			field.push([]);
+			for(var j=0; j<x+2; j++) {
+				field[i].push(0);
+			}
+		}
+		for(var i=y-1; i>=0; i--) {
+			for(var j=x-1; j>=0; j--) {
+				if(i==y-1 && j==x-1) {
+					field[i][j] = "-";
+				}
+				else if(field[i][j+2]=="-" || field[i+2][j]=="-") {
+					field[i][j] = "-";
+				}
+				else {
+					field[i][j] = "+";
+				}	
+			}
+		}
+		for(var i=0; i<y; i++) {
+			for(var j=0; j<x; j++) {
+				document.write(' | '+field[i][j]);
+				if(field[i][j]=='-') {
+					document.write('&nbsp');
+				}
+			}
+			document.write(' |<br>');
+		}
+	}
+	
+	// Решето Эратосфена выводит все простые числа от 2 до "N"
+	function sieve_eratos(n) {
+		var ar = [];
+		var ar_result = [];
+		for(var i=0; i<=n; i++) {
+			ar.push(true);
+		}
+		ar[0]=ar[1]=false;
+		for(var i=2; i<=ar.length; i++) {
+			if(ar[i] && i*i<ar.length) {
+				for(var j=i*2; j<ar.length; j+=i) {
+					
+					ar[j] = false;
+				}
+			}
+			if(ar[i]) {
+				ar_result.push(i);
+			}
+		}
+		return ar_result;
+	}
+	
+	// Алгоритм Левинштейна (минимальное редакционное расстояние
+	// между срезами строк) A[0:i] и B[0:j]
+	function levenstein(ar, br) {
+		var f = [];
+		for(var i=0; i<ar.length+1; i++) {
+			f.push([]);
+			for(var j=0; j<br.length+1; j++) {
+				if(i*j == 0) {
+					f[i].push(i+j);
+				}
+				else {
+					f[i].push(0);
+				}
+			}
+		}
+		for(var i=1; i<ar.length+1; i++) {
+			for(var j=1; j<br.length+1; j++) {
+				if(ar[i-1] == br[j-1]) {
+					f[i][j] = f[i-1][j-1];
+				}
+				else {
+					f[i][j] = 1 + Math.min(f[i-1][j], f[i][j-1], f[i-1][j-1]);
+				}
+			}
+		}
+		return f[ar.length][br.length];
+	}
+	
+	// Префикс-функция.
+	function prefix(s) {
+		var p = [0];
+		for(var i=1; i<s.length-1; i++) {
+			var k = p[i-1];
+			while(k>0 && s[i]!=s[k]) {
+				k = p[k-1];
+			}
+			if(s[i] == s[k]) {
+				k++;
+			}
+			p[i] = k;
+		}
+		return p;
+	}
+	
+	// Алгоритм Кнута-Морриса-Пратта. Находит искомую строку sub в строке s, и
+	// выводит первый и последний индекс всех расположений искомой строки.
+	function kmp(s, sub) {
+		var s_search = prefix(sub+'#'+s);
+		console.log(s_search);
+		for(var i=sub.length-1; i<s_search.length; i++) {
+			if(s_search[i] == sub.length) {
+				document.write('Найдено! Первый символ по индексу - '+(i-sub.length*2)+'. Последний символ по индексу - '+(i-sub.length-1)+'.<br>');
+			}
+		}
+	}	
+	
+</script>
+</body>
+</html>

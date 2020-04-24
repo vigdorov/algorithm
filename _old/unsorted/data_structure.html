@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /*
+        Модуль описывающий структуру данных  - стек (stack)
+        >>> clear()
+        >>> push(1)
+        >>> push(2)
+        >>> push(3)
+        >>> is_empty()
+        false
+        >>> pop()
+        3
+        >>> pop()
+        2
+        >>> pop()
+        1
+        >>> is_empty()
+        true
+        */
+        var stack = [];
+
+        function push(x) {
+            stack.push(x);
+        }
+
+        function pop() {
+            return stack.pop();
+        }
+
+        function clear() {
+            stack.length = 0;
+        }
+
+        function isEmpty() {
+            return stack.length == 0;
+        }
+
+        // Проверяет корректность скобочной последовательности
+        function isBracesSequenceCorrect(s) {
+            for (var i = 0; i < s.length; i++) {
+                var brace = s[i];
+                if (brace == "(" || brace == "[") {
+                    push(brace);
+                }
+                if (brace == ")" || brace == "]") {
+                    if (isEmpty()) {
+                        return false;
+                    }
+
+                    var left = stack.pop();
+                    var right = ")";
+                    if (left == "[") {
+                        right = "]";
+                    }
+
+                    if (right != brace) {
+                        return false;
+                    }
+                }
+
+            }
+            return isEmpty();
+        }
+
+        function testThisModule() {
+            if (isBracesSequenceCorrect("(())[)]()")) {
+                console.log("Test #1: FAIL!");
+            }
+            else {
+                console.log("Test #1: OK!");
+            }
+            if (isBracesSequenceCorrect("()([])(([]))[()]")) {
+                console.log("Test #2: OK!");
+            }
+            else {
+                console.log("Test #2: FAIL!");
+            }
+            if (isBracesSequenceCorrect("(((])")) {
+                console.log("Test #3: FAIL!");
+            }
+            else {
+                console.log("Test #3: OK!");
+            }
+            if (isBracesSequenceCorrect("]")) {
+                console.log("Test #4: FAIL!");
+            }
+            else {
+                console.log("Test #4: OK!");
+            }
+        }
+
+        testThisModule();
+
+    </script>
+</body>
+
+</html>

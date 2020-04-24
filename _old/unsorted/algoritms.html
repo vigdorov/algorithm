@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+
+        // Функция генерирует все числа (с лидирующими незначащими
+        // нулями) в n-ричной системе счислени (n <= 10)
+        // длины m
+        function generate_number(n, m, prefix = NaN) {
+
+            prefix = prefix || [];
+            if (m == 0) {
+                document.write(prefix + '<br>');
+                return;
+            }
+            for (var digit = 0; digit < n; digit++) {
+                prefix.push(digit);
+                generate_number(n, m - 1, prefix);
+                prefix.pop();
+            }
+
+        }
+        generate_number(23, 4);
+        // Ищет number в "a" и возвращает True - если такой есть
+        // и False - если такого нет
+        function find(number, a) {
+            for (var x = 1; x < a; x++) {
+                if (number == x) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        // n - чисел, m - сколько позиций осталось
+        // Генерит перестановок "n" чисел в "m" позициях,
+        // с префиксом "prefix"
+        function generate_premutations(n, m = -1, prefix = NaN) {
+            if (m == -1) {
+                m = n; // по умолчанию "n" чисел в "n" позициях
+            }
+            prefix = prefix || [];
+
+            if (m == 0) {
+                for (var i = 0; i < prefix.length; i++) {
+                    document.write(prefix[i]);
+                }
+                document.write("<br>");
+                return;
+
+
+            }
+            for (var number = 1; number < n + 1; number++) {
+
+                if (find(number, prefix.length + 1)) {
+
+                    continue;
+                }
+                prefix.push(number);
+                generate_premutations(n, m - 1, prefix);
+                prefix.pop();
+            }
+        }
+
+
+
+        // Вычисление числа фибоначи с использованием динамического
+        // программирования и как следствия экономного использования
+        // памяти
+        function fibonacci_dinamic(n) {
+            if (n <= 2) {
+                return 1;
+            }
+            var f_container = [1, 1];
+            for (var i = 0; i < n - 2; i++) {
+                f_container.push(f_container[i] + f_container[i + 1]);
+            }
+            return f_container[n - 1];
+        }
+
+
+        // Поиск левой границы
+        function left_bin(ar, key) {
+            var lr = -1;
+            var rr = ar.length;
+            while (rr - lr > 1) {
+                var middle = Math.floor((lr + rr) / 2);
+                if (ar[middle] < key) {
+                    lr = middle;
+                }
+                else {
+                    rr = middle;
+                }
+            }
+            return lr;
+        }
+
+        // Поиск правой границы
+        function right_bin(ar, key) {
+            var lr = -1;
+            var rr = ar.length;
+            while (rr - lr > 1) {
+                var middle = Math.floor((lr + rr) / 2);
+                if (ar[middle] <= key) {
+                    lr = middle;
+                }
+                else {
+                    rr = middle;
+                }
+            }
+            return rr;
+        }
+
+        // Функция бинарного поиска, выдает границы области, в которой
+        // расположен искомый элемент
+        function binary_search(ar, key) {
+            var left_arg = left_bin(ar, key);
+            var right_arg = right_bin(ar, key);
+            return [left_arg, right_arg];
+        }
+
+        // Функция тестирования бинарного поиска
+        function test_binary_search() {
+            document.write(':: Binary search test ::<br>');
+
+            var ar = [1, 2, 5, 5, 5, 7, 8];
+            var result = binary_search(ar, 1);
+            document.write('Test #1:<br>');
+            if (comparisonArray(result, [-1, 1])) {
+                msg_ok();
+            }
+            else {
+                msg_fail();
+            }
+
+            result = binary_search(ar, 5);
+            document.write('Test #2:<br>');
+            if (comparisonArray(result, [1, 5])) {
+                msg_ok();
+            }
+            else {
+                msg_fail();
+            }
+
+            result = binary_search(ar, 9);
+            document.write('Test #3:<br>');
+            if (comparisonArray(result, [6, 7])) {
+                msg_ok();
+            }
+            else {
+                msg_fail();
+            }
+
+            result = binary_search(ar, 3);
+            document.write('Test #1:<br>');
+            if (comparisonArray(result, [1, 2])) {
+                msg_ok();
+            }
+            else {
+                msg_fail();
+            }
+        }
+
+
+
+
+    </script>
+</body>
+
+</html>

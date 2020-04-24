@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<script>
+	// Алгоритмы сортировки рюкзака.
+	
+	// Алгоритм. Рюкзак 0-1. В рюкзак можно положить только один экземпляр
+	// каждого предмета. Каждый предмет имеет определенный вес и стоимость.
+	// Рюкзак имеет ограниченную вместимость по весу. Нужно найти комбинацию
+	// предметов в рюкзаке, при котором они поместяться и будут иметь
+	// максимальную стоимость
+	function backpack_1(mass, price, m_b) {
+		var awr = [];		
+		for(var i=0; i<mass.length+1; i++) {
+			awr.push([]);
+			for(var w=0; w<m_b+1; w++) {
+				if(i==0 || w==0) {
+					awr[i].push(0);
+				}
+				else if(mass[i-1] > w) {
+					awr[i].push(awr[i-1][w]);
+				}
+				else {
+					awr[i].push(Math.max(awr[i-1][w], awr[i-1][w-mass[i-1]] + price[i-1]));
+				}
+			}
+		}
+		console.log(awr);
+		return awr[mass.length][m_b];
+	}
+	
+	var mass = [3, 4, 5, 8, 9];
+	var price = [1, 6, 6, 7, 6];
+	var mass_backpack = 13;
+	
+	var x = backpack_1(mass, price, mass_backpack);
+	document.write(x);
+</script>
+</body>
+</html>
